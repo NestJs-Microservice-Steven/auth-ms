@@ -25,8 +25,6 @@ COPY --from=deps /usr/src/app/node_modules ./node_modules
 # COPIAR TODO EL COD FUENTE DE LA APP // menos lo que este ignorado en el dockerignore
 COPY . .
 
-ARG ORDERS_DATABASE_URL
-ENV DATABASE_URL=$ORDERS_DATABASE_URL
 
 # RUN npm run test <--- este seria el siguiente paso ideal pero por ahora no
 
@@ -35,7 +33,6 @@ RUN npm run build
 # solo deja dependencias de produccion
 RUN npm ci -f --only=production && npm cache clean --force
 
-RUN npx prisma migrate deploy
 RUN npx prisma generate
 
 
