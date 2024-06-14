@@ -1,54 +1,45 @@
-#! DEPENDENCIAS 
+# Dependencias
 FROM node:21-alpine3.19 as deps
 
 WORKDIR /usr/src/app
 
-COPY package*.json ./
-COPY package-lock*.json ./
+COPY package.json ./
+COPY package-lock.json ./
 
 RUN npm install
 
 
 
 
-
-#! BUILDER - Construye la APP
-
+# Builder - Construye la aplicación
 FROM node:21-alpine3.19 as build
 
 WORKDIR /usr/src/app
 
-# Copiar de deps, los modulos de node
-
+# Copiar de deps, los módulos de node
 COPY --from=deps /usr/src/app/node_modules ./node_modules
 
-# COPIAR TODO EL COD FUENTE DE LA APP // menos lo que este ignorado en el dockerignore
+# Copiar todo el codigo fuente de la aplicación
 COPY . .
 
-
-# RUN npm run test <--- este seria el siguiente paso ideal pero por ahora no
-
+# RUN npm run test
 RUN npm run build
 
-# solo deja dependencias de produccion
 RUN npm ci -f --only=production && npm cache clean --force
 
 RUN npx prisma generate
 
 
 
-
-
-#! CREAR IMAGEN FINAL DE DOCKER
-
-
+# Crear la imagen final de Docker
 FROM node:21-alpine3.19 as prod
 
 WORKDIR /usr/src/app
 
+
 COPY --from=build /usr/src/app/node_modules ./node_modules
 
-#COPIAR LA CARPETA DE DISTRIBUCION  ||| DIST
+# Copiar la carpeta de DIST
 COPY --from=build /usr/src/app/dist ./dist
 
 
@@ -56,6 +47,7 @@ ENV NODE_ENV=production
 
 USER node
 
+
 EXPOSE 3000
 
-CMD [ "node", "dist/main.js"]
+CMD [ "node", "dist/main.js" ]

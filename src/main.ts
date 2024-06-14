@@ -1,13 +1,10 @@
-import { NestFactory } from "@nestjs/core";
-import { AppModule } from "./app.module";
-import { MicroserviceOptions, Transport } from "@nestjs/microservices";
-import { ValidationPipe } from "@nestjs/common";
-import { envs } from "./config";
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import { envs } from './config';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
-  // TODO: instalacion de NATS, @nestjs/microservices
-  // PORT: 3004 configurar variables de entorno
-
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
     AppModule,
     {
@@ -15,16 +12,17 @@ async function bootstrap() {
       options: {
         servers: envs.natsServers,
       },
-    }
+    },
   );
 
-  // PERMITE QUE LA VALIACION CONTINUE 
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
       forbidNonWhitelisted: true,
-    })
+    }),
   );
+
+  console.log('AuthMS- Testing log');
 
   await app.listen();
 }
