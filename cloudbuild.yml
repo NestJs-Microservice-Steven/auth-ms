@@ -16,3 +16,6 @@ steps:
         "push",
         "northamerica-northeast1-docker.pkg.dev/tienda-microservices-425614/image-registry/auth-ms",
       ]
+
+
+      #testing
